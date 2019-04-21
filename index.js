@@ -35,7 +35,7 @@ client.on('message', async message => {
         else message.reply('Not in a channel')
       break;
       case 'invite':
-        message.reply(process.env.INVITE_URL)
+        message.reply(process.env.INVITE)
       break;
       case 'help':
       case '':

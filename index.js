@@ -11,6 +11,12 @@ broadcast.playArbitraryInput(process.env.STREAM_URL, {
   volume: 0.5,
   passes: 3
 });
+broadcast.on('end', () => {
+  broadcast.playArbitraryInput(process.env.STREAM_URL, {
+    volume: 0.5,
+    passes: 3
+  });
+})
 
 client.on('message', async message => {
   // Voice only works in guilds, if the message does not come from a guild,
@@ -47,7 +53,7 @@ client.on('message', async message => {
   }
 });
 
-client.on('voiceStateUpdate', (oldMember, newMember) => {
+client.on('voiceStateUpdate', (_, newMember) => {
   if (newMember.guild.voiceConnection && newMember.guild.voiceConnection.channel.members.size == 1) newMember.guild.voiceConnection.disconnect();
 })
 

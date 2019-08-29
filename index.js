@@ -3,7 +3,7 @@ const Discord = require('discord.js'),
       axios = require('axios');
 
 dotenv.config()
-const client = new Discord.Client();
+const client = new Discord.Client({autoReconnect:true});
 client.login(process.env.TOKEN);
 
 const broadcast = client.createVoiceBroadcast();

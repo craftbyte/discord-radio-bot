@@ -6,13 +6,13 @@ dotenv.config()
 const client = new Discord.Client({autoReconnect:true});
 client.login(process.env.TOKEN);
 
-const broadcast = client.createVoiceBroadcast();
-broadcast.playArbitraryInput(process.env.STREAM_URL, {
+const broadcast = client.voice.createBroadcast();
+broadcast.play(process.env.STREAM_URL, {
   volume: 0.5,
   passes: 3
 });
 broadcast.on('end', () => {
-  broadcast.playArbitraryInput(process.env.STREAM_URL, {
+  broadcast.play(process.env.STREAM_URL, {
     volume: 0.5,
     passes: 3
   });
@@ -28,16 +28,17 @@ client.on('message', async message => {
 
   switch(command) {
       case 'join':
-        if (message.member.voiceChannel) {
+        if (message.member.voice.channel) {
           message.react('👍')
-          const connection = await message.member.voiceChannel.join();
-          const dispatcher = connection.playBroadcast(broadcast);
+          const connection = await message.member.voice.channel.join();
+          if (!connection.voice.selfDeaf) connection.voice.setSelfDeaf(true);
+          const dispatcher = connection.play(broadcast);
         } else {
           message.reply('You need to join a voice channel first!');
         }
       break;
       case 'leave':
-        if (message.guild.voiceConnection) message.guild.voiceConnection.disconnect();
+        if (message.guild.voice.connection) message.guild.voice.connection.disconnect();
         else message.reply('Not in a channel')
       break;
       case 'invite':
@@ -53,8 +54,8 @@ client.on('message', async message => {
   }
 });
 
-client.on('voiceStateUpdate', (_, newMember) => {
-  if (newMember.guild.voiceConnection && newMember.guild.voiceConnection.channel.members.size == 1) newMember.guild.voiceConnection.disconnect();
+client.on('voiceStateUpdate', (_, newState) => {
+  if (newState.connection && newState.connection.channel.members.size == 1) newState.connection.disconnect();
 })
 
 var updateNp = () => {
